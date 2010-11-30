@@ -1,0 +1,47 @@
+
+#idejonakontent .ui-btn {
+  background-image: none;
+  background-color: white;
+}
+#idejonakontent .ui-btn-inner {
+  padding: 0px;
+  text-overflow: clip;
+  height:100%;
+}
+
+#idejonakontent .ui-btn-up-c {
+  text-shadow: none;
+}
+
+#idejonakontent .ui-btn-text {
+  font-weight: normal;
+}
+
+#idejonakontent .ui-btn-corner-all {
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+}
+
+#idejonakontent .ui-btn-inner {
+  white-space: normal;
+  word-break: break-all;
+}
+
+#idejonakontent .ui-btn-text {
+  font-size: 14px;
+} 
+
+#idejonakontent .ui-content {
+  padding: 0px;
+}
+
+#idejonakontent .piros {
+  background-image: none;
+  background-color: #FF3333;
+  color: white;
+}
+
+#idejonakontent .zold {
+  background-color: green;
+ }

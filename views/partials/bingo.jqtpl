@@ -1,0 +1,18 @@
+<div data-role="page" data-nobackbtn="true"> 
+  <div data-role="header"> 
+    <h1>Bullshitbingo</h1> 
+  </div>
+   
+  <div data-role="content">
+    <div class="ui-grid-c" id="idejonakontent">
+      {{each(i, row) rows}}
+        <div class="row-${i}"> 
+          {{each(j, bitem) row}}
+          <div class="kocka ui-block-${ $item.rowletter(j) }"><a href="#" data-role="button" >${bitem}</a></div>
+          {{/each}}
+        </div>
+        {{/each}}
+            
+    </div>
+  </div>
+</div> 

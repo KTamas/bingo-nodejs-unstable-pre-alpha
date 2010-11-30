@@ -1,0 +1,22 @@
+CACHE MANIFEST
+#r0001
+CACHE:
+/jqm/jquery.mobile-1.0a2.css
+/jqm/jquery.mobile-1.0a2.min.css
+/jqm/jquery.validate.min.js
+/jqm/jquery-1.4.4.min.js
+/jqm/jquery.mobile-1.0a2.js
+/jqm/jquery.mobile-1.0a2.min.js
+/jqm/images/ajax-loader.png
+/jqm/images/form-check-on.png
+/jqm/images/form-radio-on.png
+/jqm/images/icons-18-white.png
+/jqm/images/icons-36-white.png
+/jqm/images/form-check-off.png
+/jqm/images/form-radio-off.png
+/jqm/images/icons-18-black.png
+/jqm/images/icons-36-black.png
+/jqm/images/icon-search-black.png
+
+NETWORK:
+/index.html
