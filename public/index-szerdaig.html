@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>bullshitbingo!</title>
+    <link rel="stylesheet" href="/jqm/jquery.mobile-1.0a2.min.css" />
+    <script src="/jqm/jquery-1.4.4.min.js"></script>
+    <script src="/jqm/jquery.mobile-1.0a2.min.js"></script>
+    <script src="/jqm/jquery.validate.min.js"></script>
+
+    <script src="/businesstime.js"></script>
+    <script src="validations.js"></script>
+    <link rel="stylesheet" href="custom.css" type="text/css" media="screen" charset="utf-8">
+
+    <script src="/socket.io/socket.io.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+  var game;
+  function loadList() {
+    $.mobile.pageLoading();
+    $.getJSON("/list", function(json){
+        var lista="";
+        $.each(json, function(i,e) {
+          lista += "<li><a href='#play/"+ e.title +"'>" + e.title+ "</a></li>"
+          })
+        //$("<ul>").html(lista).appendTo("#list .content").listview();
+        $("#list .content").html($("<ul>").html(lista).listview());
+        $("#list .content li").tap(function() {
+          game = $(this).text();
+        })
+          $.mobile.changePage("#list");
+    });
+  }
+  $(document).ready(function(){
+      $("#login").submit(function(){
+        $("#creator").val($("#nick").val());
+        loadList();
+        return false;
+      });
+      $("#newform").submit(function(){
+        $.mobile.pageLoading();
+        $.post("/new", $(this).serialize(), function() {
+          loadList();
+        })
+        return false;
+      });
+          
+  $("div").live("pageshow", function(e,u) {
+      szosal();
+    });
+  });
+  
+</script>
+  </head>
+  <body>
+
+    <div data-role="page" id="login">
+      <div data-role="header" data-nobackbtn="true">
+        <h1>bullshitbingo!</h1>
+      </div>
+
+      <form id="loginform">
+      <div data-role="fieldcontain">
+        <label for="nick">nickneved:</label>
+        <input type="text" name="nick" id="nick" class="required" minlength="2"/>
+        <button type="submit">Bejelentkezés</button>
+      </div>
+      </form>
+    </div>
+
+    <div data-role="page" id="wordlist" data-nobackbtn="true">
+      <div data-role="header" data-position="inline">
+        <h2>Játékok<h2>
+        <a href="#new" class="ui-btn-right" data-icon="plus" data-theme="b">új szolista</a>
+      </div>
+      <div data-role="content" class="content"></div>
+    </div>
+
+    <div data-role="page" id="gamelist" data-nobackbtn="true">
+      <div data-role="header" data-position="inline">
+        <h2>Játékok<h2>
+        <a href="#new" class="ui-btn-right" data-icon="plus" data-theme="b">új játék</a>
+      </div>
+      <div data-role="content" class="content"></div>
+    </div>
+
+    <div data-role="page" id="new" data-nobackbtn="true">
+      <div data-role="header">
+        <h1>Új játék</h1>
+      </div>
+      <form id="newform" method="post" action="/new">
+        <input type="hidden" id="creator" name="creator" value="anonymous">
+        <div data-role="fieldcontain">
+          <label for="title">Bingókártya neve</label>
+          <input type="text" name="title" class="required" minlength="3" />
+        </div>
+        <div data-role="fieldcontain">
+          <label for="textarea">Bullshit szavak (összesen 16, soronként egy):</label>
+          <textarea cols="16" rows="16" name="textarea" id="textarea" class="required sixteen"></textarea>
+        </div>
+        <button type="submit">Csináld</button>
+      </form>
+    </div>
+
+
+  </body>
+</html>

@@ -3,7 +3,7 @@
     <h1>Bullshitbingo</h1> 
   </div>
    
-  <div data-role="content">
+  <div data-role="content" class="bingolap">
     <div class="ui-grid-c" id="idejonakontent">
       {{each(i, row) rows}}
         <div class="row-${i}"> 

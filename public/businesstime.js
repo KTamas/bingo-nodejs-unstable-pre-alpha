@@ -20,8 +20,8 @@ function bingo(ez) {
 
 function szosal(){
   if ($(".kocka a").length > 0) {
-    nick = $("#nick").val();
-    console.log(game); 
+    game = window.location.hash.split("/")[1];
+    nick = localStorage.getItem("nick");
     $(".kocka a").click(function() {
       $(this).toggleClass("piros");
       if (bingo($(this)) === true) {
@@ -34,7 +34,10 @@ function szosal(){
     });
     socket.on('message', function(data) {
         if (data.event === "win" && data.game === game) {
-          alert(data.nick + " üzeni: BINGÓ!");
+          $("<div>", {
+            "class": "notice",
+            "html": "BINGÓ! " + data.nick + " nyert!"
+            }).appendTo($.mobile.activePage);
         }
     });
     socket.connect();

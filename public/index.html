@@ -1,98 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html ><!-- manifest="cache.manifest"-->
   <head>
-    <title>bullshitbingo!</title>
-    <link rel="stylesheet" href="/jqm/jquery.mobile-1.0a2.min.css" />
-    <script src="/jqm/jquery-1.4.4.min.js"></script>
-    <script src="/jqm/jquery.mobile-1.0a2.min.js"></script>
-    <script src="/jqm/jquery.validate.min.js"></script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+     <!-- jqm -->
+     <link rel="stylesheet" href="jqm/jquery.mobile-1.0a2.css" />
+     <script src="jqm/jquery-1.4.4.min.js"></script>
+     <! --script src="jqm-custom.js"></script -->
+     <script src="jqm/jquery.mobile-1.0a2.min.js"></script>
 
+
+    <script src="/jqm/jquery.validate.min.js"></script>
     <script src="/businesstime.js"></script>
     <script src="validations.js"></script>
     <link rel="stylesheet" href="custom.css" type="text/css" media="screen" charset="utf-8">
 
     <script src="/socket.io/socket.io.js"></script>
 
-<script type="text/javascript" charset="utf-8">
-  var game;
-  function loadList() {
-    $.mobile.pageLoading();
-    $.getJSON("/list", function(json){
-        var lista="";
-        $.each(json, function(i,e) {
-          lista += "<li><a href='#play/"+ e.title +"'>" + e.title+ "</a></li>"
-          })
-        //$("<ul>").html(lista).appendTo("#list .content").listview();
-        $("#list .content").html($("<ul>").html(lista).listview());
-        $("#list .content li").tap(function() {
-          game = $(this).text();
+
+     <script>
+
+       // ha van friss appCache, illene újratölteni ezt a lapot is.
+       // csúnya, fixme
+       // $(applicationCache).bind("updateready", window.location.reload)
+
+       var loadGames = function() {
+         $.getJSON("/games", function(json){         
+           var lista = ""; 
+           $.each(json, function(i,e) {
+             lista += '<li><a href="#play/'+ e.key +'">' + e.title + '</a><p>Elindította: '+ e.creator +'</p><span class="ui-li-count">'+ e.num_curr_playing +'</li>';
+             });
+             $("#show_games .content").html($("<ul>").data("role", "listview").html(lista).listview());
+               if (window.location.hash != "#show_games") {
+                 $.mobile.updateHash("#show_games");
+               }
+         });
+       }
+
+       var loadWordlists = function() {
+         $.getJSON("/wordlists", function(json){
+           var lista = "";
+           $.each(json, function(i, e) {
+             lista += '<li><a href="javascript:addGame(\''+ e.key +'\')">'+ e.title +'</a><p>'+ e.words.join(", ") + '</p></li>';
+           });
+           $("#show_wordlists .content").html($("<ul>").data("role", "listview").data("filter", "true").html(lista).listview());
+             if (window.location.hash != "#show_wordlists") {
+           $.mobile.updateHash("#show_wordlists");
+           }
         })
-          $.mobile.changePage("#list");
-    });
-  }
-  $(document).ready(function(){
-      $("#login").submit(function(){
-        $("#creator").val($("#nick").val());
-        loadList();
-        return false;
-      });
-      $("#newform").submit(function(){
-        $.mobile.pageLoading();
-        $.post("/new", $(this).serialize(), function() {
-          loadList();
-        })
-        return false;
-      });
-          
-  $("div").live("pageshow", function(e,u) {
-      szosal();
-    });
-  });
-  
-</script>
+       }
+
+       var addGame = function(uuid) {
+         $.post("/new_game", {wordlist: uuid, creator: localStorage.getItem("nick")}, function() {
+           loadGames();
+         });
+       }
+       $(document).ready(function(){
+         $("#login form").submit(function() {
+           localStorage.setItem("nick",$("#login form").find("input").val());
+           loadGames();
+           return false;
+         });
+         $("#newgame").tap(function() {
+           loadWordlists();
+           return false;
+         });
+         $("#newform").submit(function(){
+           $.post("/new_wordlist", $(this).serialize(), function(){
+             loadWordlists();
+             $.mobile.updateHash("#show_wordlists");
+           });
+           return false;
+         })
+       })
+
+        $('div').live('pageshow',function(event, ui){
+          if (localStorage.getItem("nick")) {
+            szosal();
+          }
+        });
+		
+     </script>
+    <title>bullshitbingo!</title>
+    
   </head>
   <body>
 
-    <div data-role="page" id="login">
-      <div data-role="header" data-nobackbtn="true">
+    <div id="login" data-role="page">
+      <div data-role="header">
         <h1>bullshitbingo!</h1>
       </div>
-
-      <form id="loginform">
-      <div data-role="fieldcontain">
-        <label for="nick">nickneved:</label>
-        <input type="text" name="nick" id="nick" class="required" minlength="2"/>
-        <button type="submit">Bejelentkezés</button>
+      <div data-role="content">
+        <form action="#show_games" method="post">
+          <div data-role="fieldcontain">
+            <label for="nick">A bingózáshoz kérlek írd be a nickneved:</label>
+            <input type="text" name="nick" id="nick" value="" />
+          </div>
+          <button type="submit">bejelentkezés</button>
+        </form>
       </div>
-      </form>
-    </div>
-
-    <div data-role="page" id="list" data-nobackbtn="true">
+    </div> 
+    <div id="show_games" data-role="page">
       <div data-role="header" data-position="inline">
-        <h2>Játékok<h2>
-        <a href="#new" class="ui-btn-right" data-icon="plus" data-theme="b">új játék</a>
+        <h1>aktív játékok</h1>
+        <a id="newgame" href="#show_wordlists" data-icon="plus" class="ui-btn-right" data-theme="b">új játék</a>
       </div>
-      <div data-role="content" class="content"></div>
-    </div>
+      <div data-role="content" class="content">
+      </div>
+    </div> 
 
-    <div data-role="page" id="new" data-nobackbtn="true">
+    <div id="show_wordlists" data-role="page" data-position="inline">
       <div data-role="header">
-        <h1>Új játék</h1>
+        <h1>játszható pályák</h1>
+        <a href="#new_wordlist" data-icon="plus" class="ui-btn-right" data-theme="c">új pálya</a>
       </div>
-      <form id="newform" method="post" action="/new">
-        <input type="hidden" id="creator" name="creator" value="anonymous">
-        <div data-role="fieldcontain">
-          <label for="title">Bingókártya neve</label>
-          <input type="text" name="title" class="required" minlength="3" />
-        </div>
-        <div data-role="fieldcontain">
-          <label for="textarea">Bullshit szavak (összesen 16, soronként egy):</label>
-          <textarea cols="16" rows="16" name="textarea" id="textarea" class="required sixteen"></textarea>
-        </div>
-        <button type="submit">Csináld</button>
-      </form>
-    </div>
+      <div data-role="content" class="content">
+      </div>
+    </div> 
 
+
+    <div id="new_wordlist" data-role="page">
+      <div data-role="header">
+        <h1>új pálya</h1>
+      </div>
+      <div data-role="content">
+        <form id="newform" method="post" action="/new">
+          <input type="hidden" name="creator" value="anonymous" >
+          <div data-role="fieldcontain">
+            <label for="title">pálya címe:</label>
+            <input type="text" name="title" class="required" minlength="3">
+          </div>
+          <div data-role="fieldcontain">
+            <label for=textarea">bullshit szavak (összesen 16, soronként 1):</label>
+            <textarea cols=16 rows=16 name="textarea" id="textarea" class="required sixteen"></textarea>
+          </div>
+          <button type="submit">Csináld</button>
+        </form>
+      </div>
+    </div> 
+
+    <div id="play_game" data-role="page">
+      <div data-role="header">
+        <h1>bullshitbingo!</h1>
+      </div>
+      <div data-role="content">
+        <p>kontent</p>
+      </div>
+    </div> 
 
   </body>
 </html>
