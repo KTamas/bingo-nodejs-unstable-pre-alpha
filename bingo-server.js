@@ -159,12 +159,17 @@ app.post('/new_game', function(req,res){
 app.listen(8124);
 
 var socket = io.listen(app);
+
+var megnyert_jatekok = [];
+
 socket.on('connection', function(client) {
     client.broadcast({announcement: client.sessionId + ' connected, weee'});
     client.on('message', function(data) {
       console.log(data);
-      if (data.nyertem) {
+      if (data.nyertem && megnyert_jatekok.indexOf(data.game) == -1) {
         client.broadcast({ "event": "win", "game": data.game, "nick": data.nick});
+        megnyert_jatekok.push(data.game);
+        games.rm(data.game);
       }
     });
 });

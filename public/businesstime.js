@@ -33,11 +33,13 @@ function szosal(){
         socket.send(JSON.stringify({"nick": nick, "game": game }))
     });
     socket.on('message', function(data) {
-        if (data.event === "win" && data.game === game) {
-          $("<div>", {
-            "class": "notice",
-            "html": "BINGÓ! " + data.nick + " nyert!"
-            }).appendTo($.mobile.activePage);
+      console.log(data);
+        if (data.event === "win"&& data.game === game) {
+          alert("bingó! " + data.nick + " nyert!");
+          //$("<div>", {
+            //"class": "notice",
+            //"html": "BINGÓ! " + data.nick + " nyert!"
+            //}).appendTo($.mobile.activePage);
         }
     });
     socket.connect();
